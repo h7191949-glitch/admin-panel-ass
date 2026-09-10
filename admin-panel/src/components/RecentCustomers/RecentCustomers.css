@@ -1,0 +1,149 @@
+.recent-customers-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.025);
+}
+
+.recent-customers-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 15px;
+}
+
+.recent-customers-header h3 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 14px;
+}
+
+.recent-customers-header button {
+  border: none;
+  background: transparent;
+
+  color: #6366f1;
+  font-size: 9px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.recent-customers-header button:hover {
+  color: #4f46e5;
+}
+
+.recent-customers-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-customer-item {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 11px 0;
+
+  border-bottom: 1px solid #f0f1f4;
+}
+
+.recent-customer-item:last-child {
+  border-bottom: none;
+  padding-bottom: 2px;
+}
+
+.recent-customer-avatar {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 50%;
+
+  background: #e8edff;
+  color: #4f46e5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  flex-shrink: 0;
+}
+
+.recent-customer-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  flex: 1;
+}
+
+.recent-customer-info strong {
+  color: #374151;
+  font-size: 10px;
+}
+
+.recent-customer-info span {
+  color: #9ca3af;
+  font-size: 8px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-customer-info small {
+  color: #c1c6cf;
+  font-size: 7px;
+}
+
+.recent-customer-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  padding: 4px 7px;
+
+  border-radius: 20px;
+
+  font-size: 7px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.recent-customer-status i {
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  display: block;
+}
+
+.recent-customer-status.active {
+  background: #def7eb;
+  color: #18a36b;
+}
+
+.recent-customer-status.active i {
+  background: #18a36b;
+}
+
+.recent-customer-status.inactive {
+  background: #ffe4e4;
+  color: #e84c4c;
+}
+
+.recent-customer-status.inactive i {
+  background: #e84c4c;
+}

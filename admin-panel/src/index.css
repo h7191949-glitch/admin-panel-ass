@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f7fb;
+  color: #111827;
+}
+
+.admin-layout {
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-left: 250px;
+  min-height: 100vh;
+}
+
+.dashboard-content {
+  padding: 30px;
+}
+
+.dashboard-content h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.dashboard-content p {
+  color: #6b7280;
+}

@@ -1,0 +1,77 @@
+.customer-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.customer-search {
+  width: 310px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 0 12px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+}
+
+.customer-search span {
+  color: #9ca3af;
+  font-size: 18px;
+}
+
+.customer-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #374151;
+  font-size: 11px;
+}
+
+.customer-search input::placeholder {
+  color: #9ca3af;
+}
+
+.customer-filters select {
+  height: 38px;
+  min-width: 130px;
+
+  padding: 0 12px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+
+  color: #374151;
+  font-size: 11px;
+
+  outline: none;
+  cursor: pointer;
+}
+
+.customer-filters select:focus {
+  border-color: #6366f1;
+}
+
+@media (max-width: 750px) {
+  .customer-filters {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .customer-search {
+    width: 100%;
+  }
+
+  .customer-filters select {
+    width: 100%;
+  }
+}
