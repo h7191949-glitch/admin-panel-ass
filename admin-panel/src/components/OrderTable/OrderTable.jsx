@@ -1,21 +1,45 @@
+
 import React, { useState } from "react";
 import "./OrderTable.css";
 
-function OrderTable({ orders }) {
+function OrderTable({ orders, onDelete, onUpdateStatus }) {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [openMenu, setOpenMenu] = useState(null);
 
-  const getStatusClass = (status) => {
-    return status.toLowerCase().replaceAll(" ", "-");
-  };
+  const getStatusClass = (status) =>
+    status.toLowerCase().replaceAll(" ", "-");
 
   const handleEdit = (order) => {
-    alert(`Edit Order ${order.orderId}`);
+    alert("Edit Order functionality will be connected next.");
     setOpenMenu(null);
   };
 
   const handleUpdateStatus = (order) => {
-    alert(`Update Status for ${order.orderId}`);
+    const newStatus = window.prompt(
+      "Enter new status: Pending, Processing, Shipped, Delivered, Cancelled",
+      order.status
+    );
+
+    const allowedStatuses = [
+      "Pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+    ];
+
+    if (!newStatus) {
+      setOpenMenu(null);
+      return;
+    }
+
+    if (!allowedStatuses.includes(newStatus)) {
+      alert("Invalid status. Please enter a valid order status.");
+      setOpenMenu(null);
+      return;
+    }
+
+    onUpdateStatus(order, newStatus);
     setOpenMenu(null);
   };
 
@@ -25,7 +49,11 @@ function OrderTable({ orders }) {
     );
 
     if (confirmDelete) {
-      alert(`${order.orderId} deleted`);
+      onDelete(order);
+
+      if (selectedOrder?.id === order.id) {
+        setSelectedOrder(null);
+      }
     }
 
     setOpenMenu(null);
@@ -35,7 +63,6 @@ function OrderTable({ orders }) {
     <>
       <div className="order-table-wrapper">
         <div className="order-table">
-
           <div className="order-row order-table-header">
             <span>□</span>
             <span>Order ID</span>
@@ -50,15 +77,10 @@ function OrderTable({ orders }) {
 
           {orders.length > 0 ? (
             orders.map((order) => (
-              <div
-                className="order-row"
-                key={order.id}
-              >
+              <div className="order-row" key={order.id}>
                 <span className="order-checkbox">□</span>
 
-                <strong className="order-id">
-                  {order.orderId}
-                </strong>
+                <strong className="order-id">{order.orderId}</strong>
 
                 <div className="customer-info">
                   <div className="customer-avatar">
@@ -75,9 +97,8 @@ function OrderTable({ orders }) {
                   <span className="product-mini">
                     {order.productIcon}
                   </span>
-
                   <span className="more-products">
-                    +{order.products}
+                    {order.products} items
                   </span>
                 </div>
 
@@ -85,16 +106,10 @@ function OrderTable({ orders }) {
                   ${order.total.toFixed(2)}
                 </strong>
 
-                <span className="payment-method">
-                  {order.payment}
-                </span>
+                <span className="payment-method">{order.payment}</span>
 
                 <span>
-                  <span
-                    className={`order-status ${getStatusClass(
-                      order.status
-                    )}`}
-                  >
+                  <span className={`order-status ${getStatusClass(order.status)}`}>
                     {order.status}
                   </span>
                 </span>
@@ -105,8 +120,6 @@ function OrderTable({ orders }) {
                 </div>
 
                 <div className="order-actions">
-
-                  {/* VIEW */}
                   <button
                     className="view-order-btn"
                     title="View Order"
@@ -115,18 +128,12 @@ function OrderTable({ orders }) {
                     👁
                   </button>
 
-                  {/* MORE */}
                   <div className="more-actions-wrapper">
-
                     <button
                       className="more-order-btn"
                       title="More Actions"
                       onClick={() =>
-                        setOpenMenu(
-                          openMenu === order.id
-                            ? null
-                            : order.id
-                        )
+                        setOpenMenu(openMenu === order.id ? null : order.id)
                       }
                     >
                       ⋮
@@ -134,49 +141,31 @@ function OrderTable({ orders }) {
 
                     {openMenu === order.id && (
                       <div className="order-action-menu">
-
-                        <button
-                          onClick={() =>
-                            handleEdit(order)
-                          }
-                        >
+                        <button onClick={() => handleEdit(order)}>
                           ✏️ Edit Order
                         </button>
 
-                        <button
-                          onClick={() =>
-                            handleUpdateStatus(order)
-                          }
-                        >
+                        <button onClick={() => handleUpdateStatus(order)}>
                           🔄 Update Status
                         </button>
 
                         <button
                           className="delete-action"
-                          onClick={() =>
-                            handleDelete(order)
-                          }
+                          onClick={() => handleDelete(order)}
                         >
                           🗑️ Delete Order
                         </button>
-
                       </div>
                     )}
-
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="no-orders">
-              No orders found.
-            </div>
+            <div className="no-orders">No orders found.</div>
           )}
-
         </div>
       </div>
-
-      {/* VIEW ORDER MODAL */}
 
       {selectedOrder && (
         <div
@@ -187,7 +176,6 @@ function OrderTable({ orders }) {
             className="order-view-modal"
             onClick={(e) => e.stopPropagation()}
           >
-
             <div className="order-modal-header">
               <div>
                 <h3>Order Details</h3>
@@ -203,7 +191,6 @@ function OrderTable({ orders }) {
             </div>
 
             <div className="order-detail-content">
-
               <div className="order-detail-row">
                 <span>Customer</span>
                 <strong>{selectedOrder.customer}</strong>
@@ -215,18 +202,27 @@ function OrderTable({ orders }) {
               </div>
 
               <div className="order-detail-row">
-                <span>Products</span>
-                <strong>
-                  {selectedOrder.productIcon}{" "}
-                  {selectedOrder.products} items
-                </strong>
+                <span>Phone</span>
+                <strong>{selectedOrder.phone || "Not available"}</strong>
               </div>
 
               <div className="order-detail-row">
+                <span>Products</span>
+                <strong>{selectedOrder.products} items</strong>
+              </div>
+
+              {selectedOrder.items.map((item, index) => (
+                <div className="order-detail-row" key={index}>
+                  <span>{item.name || "Product"}</span>
+                  <strong>
+                    {item.quantity || 1} × ${Number(item.price || 0).toFixed(2)}
+                  </strong>
+                </div>
+              ))}
+
+              <div className="order-detail-row">
                 <span>Total Amount</span>
-                <strong>
-                  ${selectedOrder.total.toFixed(2)}
-                </strong>
+                <strong>${selectedOrder.total.toFixed(2)}</strong>
               </div>
 
               <div className="order-detail-row">
@@ -236,34 +232,29 @@ function OrderTable({ orders }) {
 
               <div className="order-detail-row">
                 <span>Status</span>
-
-                <span
-                  className={`order-status ${getStatusClass(
-                    selectedOrder.status
-                  )}`}
-                >
+                <span className={`order-status ${getStatusClass(selectedOrder.status)}`}>
                   {selectedOrder.status}
                 </span>
               </div>
 
               <div className="order-detail-row">
-                <span>Order Date</span>
-                <strong>
-                  {selectedOrder.date} -{" "}
-                  {selectedOrder.time}
-                </strong>
+                <span>Address</span>
+                <strong>{selectedOrder.address || "Not available"}</strong>
               </div>
 
+              <div className="order-detail-row">
+                <span>Order Date</span>
+                <strong>
+                  {selectedOrder.date} - {selectedOrder.time}
+                </strong>
+              </div>
             </div>
 
             <div className="order-modal-footer">
-              <button
-                onClick={() => setSelectedOrder(null)}
-              >
+              <button onClick={() => setSelectedOrder(null)}>
                 Close
               </button>
             </div>
-
           </div>
         </div>
       )}

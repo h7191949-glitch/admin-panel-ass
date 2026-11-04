@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+
+import React, { useEffect, useMemo, useState } from "react";
 import "./Customers.css";
 
 import CustomerStats from "../../components/CustomerStats/CustomerStats";
@@ -8,105 +9,56 @@ import RecentCustomers from "../../components/RecentCustomers/RecentCustomers";
 import CustomerInsights from "../../components/CustomerInsights/CustomerInsights";
 import AddCustomerModal from "../../components/AddCustomerModal/AddCustomerModal";
 
+const API_URL = "http://localhost:5000/api/customers";
+
+const formatCustomer = (customer) => ({
+  id: customer._id,
+  customerId: `CUST${customer._id.slice(-6).toUpperCase()}`,
+  name: customer.name || "",
+  email: customer.email || "",
+  phone: customer.phone || "",
+  address: customer.address || "",
+  orders: 0,
+  totalSpent: 0,
+  status: customer.status || "Active",
+  joined: new Date(customer.createdAt).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }),
+});
+
 function Customers() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Statuses");
 
   const [showAddCustomer, setShowAddCustomer] = useState(false);
-
-  // EDIT CUSTOMER
   const [editingCustomer, setEditingCustomer] = useState(null);
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [customers, setCustomers] = useState([
-    {
-      id: 1,
-      customerId: "CUST001",
-      name: "Sarah Khan",
-      email: "sarah.khan@example.com",
-      phone: "+92 300 1234567",
-      orders: 12,
-      totalSpent: 1240,
-      status: "Active",
-      joined: "Jan 15, 2025",
-    },
-    {
-      id: 2,
-      customerId: "CUST002",
-      name: "Ali Raza",
-      email: "ali.raza@example.com",
-      phone: "+92 321 9876543",
-      orders: 8,
-      totalSpent: 890,
-      status: "Active",
-      joined: "Feb 3, 2025",
-    },
-    {
-      id: 3,
-      customerId: "CUST003",
-      name: "Ayesha Malik",
-      email: "ayesha.malik@example.com",
-      phone: "+92 333 4567890",
-      orders: 5,
-      totalSpent: 520,
-      status: "Active",
-      joined: "Feb 12, 2025",
-    },
-    {
-      id: 4,
-      customerId: "CUST004",
-      name: "Usman Tariq",
-      email: "usman.tariq@example.com",
-      phone: "+92 322 1112233",
-      orders: 3,
-      totalSpent: 310,
-      status: "Inactive",
-      joined: "Feb 20, 2025",
-    },
-    {
-      id: 5,
-      customerId: "CUST005",
-      name: "Nadia Zafar",
-      email: "nadia.zafar@example.com",
-      phone: "+92 310 9876543",
-      orders: 9,
-      totalSpent: 760,
-      status: "Active",
-      joined: "Mar 1, 2025",
-    },
-    {
-      id: 6,
-      customerId: "CUST006",
-      name: "Hamza Mirza",
-      email: "hamza.mirza@example.com",
-      phone: "+92 334 1237890",
-      orders: 4,
-      totalSpent: 420,
-      status: "Inactive",
-      joined: "Mar 5, 2025",
-    },
-    {
-      id: 7,
-      customerId: "CUST007",
-      name: "Fatima Shah",
-      email: "fatima.shah@example.com",
-      phone: "+92 345 6543210",
-      orders: 7,
-      totalSpent: 680,
-      status: "Active",
-      joined: "Mar 10, 2025",
-    },
-    {
-      id: 8,
-      customerId: "CUST008",
-      name: "Ahmed Ali",
-      email: "ahmed.ali@example.com",
-      phone: "+92 333 9876541",
-      orders: 6,
-      totalSpent: 540,
-      status: "Active",
-      joined: "Mar 14, 2025",
-    },
-  ]);
+  // GET CUSTOMERS
+  const fetchCustomers = async () => {
+    try {
+      const response = await fetch(API_URL);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch customers");
+      }
+
+      const data = await response.json();
+      setCustomers(data.map(formatCustomer));
+    } catch (error) {
+      console.error("Customers Error:", error);
+      alert("Customers load nahi ho sake. Backend check karo.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   // SEARCH + STATUS FILTER
   const filteredCustomers = useMemo(() => {
@@ -119,72 +71,107 @@ function Customers() {
         customer.phone.toLowerCase().includes(searchText);
 
       const matchesStatus =
-        status === "All Statuses" ||
-        customer.status === status;
+        status === "All Statuses" || customer.status === status;
 
       return matchesSearch && matchesStatus;
     });
   }, [customers, search, status]);
 
   // ADD CUSTOMER
-  const handleAddCustomer = (newCustomer) => {
-    const customer = {
-      id: Date.now(),
-      customerId: `CUST${String(customers.length + 1).padStart(3, "0")}`,
-      name: newCustomer.name,
-      email: newCustomer.email,
-      phone: newCustomer.phone,
-      orders: 0,
-      totalSpent: 0,
-      status: newCustomer.status,
-      joined: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-    };
+  const handleAddCustomer = async (newCustomer) => {
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newCustomer.name,
+          email: newCustomer.email,
+          phone: newCustomer.phone,
+          status: newCustomer.status,
+        }),
+      });
 
-    setCustomers((prevCustomers) => [
-      ...prevCustomers,
-      customer,
-    ]);
+      const data = await response.json();
 
-    setShowAddCustomer(false);
+      if (!response.ok) {
+        throw new Error(data.message || "Customer could not be added");
+      }
+
+      await fetchCustomers();
+      setShowAddCustomer(false);
+      alert("Customer added successfully!");
+    } catch (error) {
+      console.error("Add Customer Error:", error);
+      alert(error.message || "Customer add nahi hua.");
+    }
   };
 
   // EDIT CUSTOMER
-  const handleEditCustomer = (updatedCustomer) => {
-    setCustomers((prevCustomers) =>
-      prevCustomers.map((customer) =>
-        customer.id === updatedCustomer.id
-          ? updatedCustomer
-          : customer
-      )
-    );
+  const handleEditCustomer = async (updatedCustomer) => {
+    try {
+      const response = await fetch(
+        `${API_URL}/${updatedCustomer.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: updatedCustomer.name,
+            email: updatedCustomer.email,
+            phone: updatedCustomer.phone,
+            status: updatedCustomer.status,
+          }),
+        }
+      );
 
-    setEditingCustomer(null);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Customer update failed");
+      }
+
+      await fetchCustomers();
+      setEditingCustomer(null);
+      alert("Customer updated successfully!");
+    } catch (error) {
+      console.error("Edit Customer Error:", error);
+      alert(error.message || "Customer update nahi hua.");
+    }
   };
 
   // DELETE CUSTOMER
-  const handleDeleteCustomer = (customerId) => {
-    setCustomers((prevCustomers) =>
-      prevCustomers.filter(
-        (customer) => customer.id !== customerId
-      )
-    );
+  const handleDeleteCustomer = async (customerId) => {
+    try {
+      const response = await fetch(`${API_URL}/${customerId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Customer delete failed");
+      }
+
+      setCustomers((previousCustomers) =>
+        previousCustomers.filter(
+          (customer) => customer.id !== customerId
+        )
+      );
+
+      alert("Customer deleted successfully!");
+    } catch (error) {
+      console.error("Delete Customer Error:", error);
+      alert("Customer delete nahi hua.");
+    }
   };
 
   return (
     <div className="customers-page">
-
       {/* PAGE HEADER */}
-
       <div className="customers-heading">
-
         <div>
-          <span className="customers-label">
-            CUSTOMERS
-          </span>
+          <span className="customers-label">CUSTOMERS</span>
 
           <h2>Manage Your Customers</h2>
 
@@ -200,24 +187,16 @@ function Customers() {
           <span>＋</span>
           Add Customer
         </button>
-
       </div>
 
-
       {/* CUSTOMER STATS */}
-
       <CustomerStats customers={customers} />
 
-
       {/* CUSTOMERS SECTION */}
-
       <div className="customers-section">
-
         <div className="customers-section-header">
-
           <div>
             <h3>All Customers</h3>
-
             <p>
               View, search and manage all customer accounts.
             </p>
@@ -229,72 +208,49 @@ function Customers() {
             status={status}
             setStatus={setStatus}
           />
-
         </div>
 
-
         {/* MAIN TWO COLUMN LAYOUT */}
-
         <div className="customers-main-layout">
-
           {/* LEFT SIDE */}
-
           <div className="customers-left">
-
-            <CustomerTable
-              customers={filteredCustomers}
-              onEdit={setEditingCustomer}
-              onDelete={handleDeleteCustomer}
-            />
+            {loading ? (
+              <p>Loading customers...</p>
+            ) : (
+              <CustomerTable
+                customers={filteredCustomers}
+                onEdit={setEditingCustomer}
+                onDelete={handleDeleteCustomer}
+              />
+            )}
 
             <div className="customers-footer">
-
               <span>
                 Showing {filteredCustomers.length} of{" "}
                 {customers.length} customers
               </span>
 
               <div className="customers-pagination">
-
                 <button>←</button>
-
-                <button className="active-page">
-                  1
-                </button>
-
+                <button className="active-page">1</button>
                 <button>2</button>
                 <button>3</button>
                 <button>4</button>
                 <button>5</button>
-
                 <button>→</button>
-
               </div>
-
             </div>
-
           </div>
-
 
           {/* RIGHT SIDE */}
-
           <div className="customers-right">
-
-            <RecentCustomers
-              customers={customers}
-            />
-
+            <RecentCustomers customers={customers} />
             <CustomerInsights />
-
           </div>
-
         </div>
-
       </div>
 
-
       {/* ADD CUSTOMER MODAL */}
-
       {showAddCustomer && (
         <AddCustomerModal
           onClose={() => setShowAddCustomer(false)}
@@ -302,9 +258,7 @@ function Customers() {
         />
       )}
 
-
       {/* EDIT CUSTOMER MODAL */}
-
       {editingCustomer && (
         <EditCustomerModal
           customer={editingCustomer}
@@ -312,19 +266,13 @@ function Customers() {
           onSave={handleEditCustomer}
         />
       )}
-
     </div>
   );
 }
 
-
 /* EDIT CUSTOMER MODAL */
 
-function EditCustomerModal({
-  customer,
-  onClose,
-  onSave,
-}) {
+function EditCustomerModal({ customer, onClose, onSave }) {
   const [formData, setFormData] = useState({
     name: customer.name,
     email: customer.email,
@@ -335,8 +283,8 @@ function EditCustomerModal({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((previous) => ({
+      ...previous,
       [name]: value,
     }));
   };
@@ -355,26 +303,17 @@ function EditCustomerModal({
 
     onSave({
       ...customer,
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      status: formData.status,
+      ...formData,
     });
   };
 
   return (
-    <div
-      className="edit-customer-overlay"
-      onClick={onClose}
-    >
-
+    <div className="edit-customer-overlay" onClick={onClose}>
       <div
         className="edit-customer-modal"
         onClick={(e) => e.stopPropagation()}
       >
-
         <div className="edit-customer-modal-header">
-
           <div>
             <h3>Edit Customer</h3>
             <p>{customer.customerId}</p>
@@ -386,17 +325,12 @@ function EditCustomerModal({
           >
             ×
           </button>
-
         </div>
 
-
         <form onSubmit={handleSubmit}>
-
           <div className="edit-customer-form">
-
             <div className="edit-form-group">
               <label>Full Name</label>
-
               <input
                 type="text"
                 name="name"
@@ -405,10 +339,8 @@ function EditCustomerModal({
               />
             </div>
 
-
             <div className="edit-form-group">
               <label>Email Address</label>
-
               <input
                 type="email"
                 name="email"
@@ -417,10 +349,8 @@ function EditCustomerModal({
               />
             </div>
 
-
             <div className="edit-form-group">
               <label>Phone Number</label>
-
               <input
                 type="text"
                 name="phone"
@@ -429,10 +359,8 @@ function EditCustomerModal({
               />
             </div>
 
-
             <div className="edit-form-group">
               <label>Status</label>
-
               <select
                 name="status"
                 value={formData.status}
@@ -442,12 +370,9 @@ function EditCustomerModal({
                 <option>Inactive</option>
               </select>
             </div>
-
           </div>
 
-
           <div className="edit-customer-modal-footer">
-
             <button
               type="button"
               className="edit-cancel-btn"
@@ -462,13 +387,9 @@ function EditCustomerModal({
             >
               Save Changes
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
   );
 }
