@@ -1,4 +1,5 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import "./App.css";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Navbar from "./components/Navbar/Navbar";
 
@@ -10,6 +11,18 @@ import Customers from "./pages/Customers/Customers";
 
 function App() {
   const path = window.location.pathname;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   let page;
 
@@ -25,10 +38,24 @@ function App() {
 
   return (
     <div className="admin-layout">
-      <Sidebar />
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onNavigate={() => setIsSidebarOpen(false)}
+      />
+      {isSidebarOpen && (
+        <button
+          className="sidebar-backdrop"
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
 
       <div className="main-content">
-        <Navbar />
+        <Navbar
+          isMenuOpen={isSidebarOpen}
+          onMenuToggle={() => setIsSidebarOpen((open) => !open)}
+        />
 
         <main>
           {page}

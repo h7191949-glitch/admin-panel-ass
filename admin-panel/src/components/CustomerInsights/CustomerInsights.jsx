@@ -1,4 +1,3 @@
-import React from "react";
 import "./CustomerInsights.css";
 
 function CustomerInsights() {

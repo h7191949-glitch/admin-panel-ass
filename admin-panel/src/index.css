@@ -8,26 +8,28 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f5f7fb;
   color: #111827;
-}
-
-.admin-layout {
+  min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.main-content {
-  margin-left: 250px;
-  min-height: 100vh;
+button,
+input,
+select {
+  font: inherit;
 }
 
-.dashboard-content {
-  padding: 30px;
+button {
+  touch-action: manipulation;
 }
 
-.dashboard-content h2 {
-  font-size: 24px;
-  margin-bottom: 8px;
-}
-
-.dashboard-content p {
-  color: #6b7280;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,4 +1,3 @@
-import React from "react";
 import "./OrderStats.css";
 
 function OrderStats({ orders }) {

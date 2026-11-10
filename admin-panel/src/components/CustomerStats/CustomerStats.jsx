@@ -1,4 +1,3 @@
-import React from "react";
 import "./CustomerStats.css";
 
 function CustomerStats({ customers }) {

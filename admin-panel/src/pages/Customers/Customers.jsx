@@ -1,5 +1,5 @@
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./Customers.css";
 
 import CustomerStats from "../../components/CustomerStats/CustomerStats";
@@ -28,6 +28,17 @@ const formatCustomer = (customer) => ({
   }),
 });
 
+async function loadCustomers() {
+  const response = await fetch(API_URL);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch customers");
+  }
+
+  const data = await response.json();
+  return data.map(formatCustomer);
+}
+
 function Customers() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Statuses");
@@ -40,14 +51,7 @@ function Customers() {
   // GET CUSTOMERS
   const fetchCustomers = async () => {
     try {
-      const response = await fetch(API_URL);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch customers");
-      }
-
-      const data = await response.json();
-      setCustomers(data.map(formatCustomer));
+      setCustomers(await loadCustomers());
     } catch (error) {
       console.error("Customers Error:", error);
       alert("Customers load nahi ho sake. Backend check karo.");
@@ -57,7 +61,23 @@ function Customers() {
   };
 
   useEffect(() => {
-    fetchCustomers();
+    let cancelled = false;
+
+    loadCustomers()
+      .then((data) => {
+        if (!cancelled) setCustomers(data);
+      })
+      .catch((error) => {
+        console.error("Customers Error:", error);
+        if (!cancelled) alert("Customers load nahi ho sake. Backend check karo.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // SEARCH + STATUS FILTER

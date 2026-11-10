@@ -1,8 +1,19 @@
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./Products.css";
 
 const API_URL = "http://localhost:5000/api/products";
+
+async function loadProducts() {
+  const response = await fetch(API_URL);
+  if (!response.ok) throw new Error("Products fetch failed");
+
+  const data = await response.json();
+  return data.map((product) => ({
+    ...product,
+    id: product._id,
+  }));
+}
 
 function Products() {
   const [search, setSearch] = useState("");
@@ -24,21 +35,25 @@ function Products() {
   });
 
   useEffect(() => {
-    fetchProducts();
+    let cancelled = false;
+
+    loadProducts()
+      .then((data) => {
+        if (!cancelled) setProducts(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+        if (!cancelled) alert("Products load nahi ho sake. Backend check karo.");
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(API_URL);
-      if (!response.ok) throw new Error("Products fetch failed");
-
-      const data = await response.json();
-      setProducts(
-        data.map((product) => ({
-          ...product,
-          id: product._id,
-        }))
-      );
+      setProducts(await loadProducts());
     } catch (error) {
       console.error("Error fetching products:", error);
       alert("Products load nahi ho sake. Backend check karo.");

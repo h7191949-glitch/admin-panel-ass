@@ -1,6 +1,9 @@
 .sidebar {
+  z-index: 20;
   width: 250px;
-  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  overflow-y: auto;
 
   background-color: #111827;
   color: white;
@@ -12,6 +15,7 @@
   padding: 25px 15px;
 
   box-sizing: border-box;
+  transition: transform 0.25s ease, visibility 0.25s ease;
 }
 
 .sidebar h2 {
@@ -93,4 +97,16 @@
 .sidebar-other a:hover {
   background: #1f2937;
   color: white;
+}
+
+@media (max-width: 800px) {
+  .sidebar {
+    visibility: hidden;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.is-open {
+    visibility: visible;
+    transform: translateX(0);
+  }
 }

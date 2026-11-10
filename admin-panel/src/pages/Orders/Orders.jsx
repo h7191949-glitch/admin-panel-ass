@@ -1,5 +1,5 @@
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./Orders.css";
 
 import OrderStats from "../../components/OrderStats/OrderStats";
@@ -38,32 +38,41 @@ function formatOrder(order) {
   };
 }
 
+async function loadOrders() {
+  const response = await fetch(API_URL);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch orders");
+  }
+
+  const data = await response.json();
+  return data.map(formatOrder);
+}
+
 function Orders() {
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Statuses");
   const [loading, setLoading] = useState(true);
 
-  const fetchOrders = async () => {
-    try {
-      const response = await fetch(API_URL);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch orders");
-      }
-
-      const data = await response.json();
-      setOrders(data.map(formatOrder));
-    } catch (error) {
-      console.error("Orders Error:", error);
-      alert("Orders load nahi ho sake. Backend check karo.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchOrders();
+    let cancelled = false;
+
+    loadOrders()
+      .then((data) => {
+        if (!cancelled) setOrders(data);
+      })
+      .catch((error) => {
+        console.error("Orders Error:", error);
+        if (!cancelled) alert("Orders load nahi ho sake. Backend check karo.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const filteredOrders = useMemo(() => {

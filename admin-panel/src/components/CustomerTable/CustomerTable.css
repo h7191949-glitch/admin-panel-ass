@@ -1,6 +1,7 @@
 .customer-table-wrapper {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .customer-table {
@@ -271,6 +272,8 @@
 .customer-view-modal {
   width: 500px;
   max-width: 100%;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
 
   background: #ffffff;
 

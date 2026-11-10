@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import "./OrderTable.css";
 
 function OrderTable({ orders, onDelete, onUpdateStatus }) {
@@ -9,7 +9,7 @@ function OrderTable({ orders, onDelete, onUpdateStatus }) {
   const getStatusClass = (status) =>
     status.toLowerCase().replaceAll(" ", "-");
 
-  const handleEdit = (order) => {
+  const handleEdit = () => {
     alert("Edit Order functionality will be connected next.");
     setOpenMenu(null);
   };
@@ -141,7 +141,7 @@ function OrderTable({ orders, onDelete, onUpdateStatus }) {
 
                     {openMenu === order.id && (
                       <div className="order-action-menu">
-                        <button onClick={() => handleEdit(order)}>
+                        <button onClick={handleEdit}>
                           ✏️ Edit Order
                         </button>
 

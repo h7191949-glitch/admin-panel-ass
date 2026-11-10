@@ -2,6 +2,7 @@
   padding: 30px;
   background: #f5f7fb;
   min-height: calc(100vh - 75px);
+  min-width: 0;
 }
 
 /* =========================
@@ -211,6 +212,20 @@
     padding: 15px;
   }
 
+  @media (max-width: 420px) {
+    .customers-page {
+      padding: 14px;
+    }
+
+    .customers-heading {
+      padding: 16px;
+    }
+
+    .customers-section {
+      padding: 10px;
+    }
+  }
+
   .customers-heading {
     align-items: flex-start;
     flex-direction: column;
@@ -314,6 +329,8 @@
 .edit-customer-modal {
   width: 480px;
   max-width: 100%;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
 
   background: #ffffff;
 

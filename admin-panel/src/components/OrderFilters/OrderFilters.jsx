@@ -1,4 +1,3 @@
-import React from "react";
 import "./OrderFilters.css";
 
 function OrderFilters({

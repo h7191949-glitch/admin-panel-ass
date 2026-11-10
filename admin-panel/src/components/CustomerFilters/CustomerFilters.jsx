@@ -1,4 +1,3 @@
-import React from "react";
 import "./CustomerFilters.css";
 
 function CustomerFilters({

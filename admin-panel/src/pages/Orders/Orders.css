@@ -2,6 +2,7 @@
   padding: 30px;
   background: #f5f7fb;
   min-height: calc(100vh - 75px);
+  min-width: 0;
 }
 
 
@@ -188,6 +189,16 @@
 
   .orders-page {
     padding: 15px;
+  }
+
+  @media (max-width: 420px) {
+    .orders-page {
+      padding: 14px;
+    }
+
+    .orders-section {
+      padding: 10px;
+    }
   }
 
   .orders-heading {

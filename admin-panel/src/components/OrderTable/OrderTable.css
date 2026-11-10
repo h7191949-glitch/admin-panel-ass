@@ -2,6 +2,7 @@
   width: 100%;
 
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .order-table {
@@ -313,10 +314,11 @@
 .order-view-modal {
   width: 500px;
   max-width: 100%;
+  max-height: calc(100dvh - 40px);
   background: #ffffff;
   border-radius: 14px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .order-modal-header {
