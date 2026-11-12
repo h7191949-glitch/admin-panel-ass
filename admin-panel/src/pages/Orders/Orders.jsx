@@ -5,8 +5,9 @@ import "./Orders.css";
 import OrderStats from "../../components/OrderStats/OrderStats";
 import OrderFilters from "../../components/OrderFilters/OrderFilters";
 import OrderTable from "../../components/OrderTable/OrderTable";
+import { API_BASE_URL } from "../../config/api";
 
-const API_URL = "http://localhost:5000/api/orders";
+const API_URL = `${API_BASE_URL}/api/orders`;
 
 function formatOrder(order) {
   const date = new Date(order.createdAt);

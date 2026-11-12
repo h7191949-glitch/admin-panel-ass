@@ -1,8 +1,9 @@
 
 import { useEffect, useState } from "react";
 import "./Products.css";
+import { API_BASE_URL } from "../../config/api";
 
-const API_URL = "http://localhost:5000/api/products";
+const API_URL = `${API_BASE_URL}/api/products`;
 
 async function loadProducts() {
   const response = await fetch(API_URL);
@@ -15,12 +16,12 @@ async function loadProducts() {
   }));
 }
 
-function Products() {
+function Products({ openAddOnMount = false }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Categories");
   const [products, setProducts] = useState([]);
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(openAddOnMount);
   const [editingProduct, setEditingProduct] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -111,6 +112,12 @@ function Products() {
     resetImage();
     setShowModal(true);
   };
+
+  useEffect(() => {
+    if (openAddOnMount) {
+      window.history.replaceState(null, "", "/products");
+    }
+  }, [openAddOnMount]);
 
   // OPEN EDIT MODAL
   const openEditModal = (product) => {

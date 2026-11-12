@@ -8,8 +8,9 @@ import CustomerTable from "../../components/CustomerTable/CustomerTable";
 import RecentCustomers from "../../components/RecentCustomers/RecentCustomers";
 import CustomerInsights from "../../components/CustomerInsights/CustomerInsights";
 import AddCustomerModal from "../../components/AddCustomerModal/AddCustomerModal";
+import { API_BASE_URL } from "../../config/api";
 
-const API_URL = "http://localhost:5000/api/customers";
+const API_URL = `${API_BASE_URL}/api/customers`;
 
 const formatCustomer = (customer) => ({
   id: customer._id,
